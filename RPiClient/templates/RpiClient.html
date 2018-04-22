@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block body %}
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+            namespace = '';// change to an empty string to use the global namespace
+            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+            socket.on('my_response', function(msg) {
+                $('#outputpin' + msg.pin).text(msg.state)
+            });
+
+        });
+    </script>
+
+    <h1>RPi-REST Client</h1>
+    <table>
+        <tr>
+            <th><ul>Pin</ul></th>
+            <th>Direction</th>
+            <th>State</th>
+            <th>action</th>
+        </tr>
+
+    {% for pin in pins %}
+        <tr>
+            <td>{{ pins[pin].name }}</td>
+            <td>{{ pins[pin].direction }}</td>
+            <td id={{'outputpin' + pin}}>{{ pins[pin].state }}
+            <td>
+                {% if pins[pin].direction == false %}
+                    {% if pins[pin].state == true %}
+                        <a href="/pinchange/{{pin}}/0">Turn off</a>
+                    {% else %}
+                        <a href="/pinchange/{{pin}}/1">Turn on</a>
+                    {% endif %}
+                {% else %}
+                    Output only
+                {% endif %}
+            </td>
+        </tr>
+
+    {% endfor %}
+    </table>
+
+{% endblock %}
