@@ -5,7 +5,7 @@ There are 2 main components, RPiServer runs on the Raspberry Pi and exposes a se
 get/set the Raspberry Pi pin state.
 Both Server and Client are written for Python 3.
 
-![paste-image](https://raw.github.com/ronjohn/RPiREST/RPiREST-DataFlow.png)
+![RPiREST Data Flow](https://raw.github.com/ronjohn4/RPiREST/RPiREST-DataFlow.png)
 
 # RPiServer
 RPiServery runs on the Raspberry Pi and is tightly coupled with the Raspberry Pi hardware.  RPiServer is where you define
