@@ -4,10 +4,10 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
-            namespace = '';// change to an empty string to use the global namespace
+            namespace = '';  // change to an empty string to use the global namespace
             var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
 
-            socket.on('my_response', function(msg) {
+            socket.on('pin_change', function(msg) {
                 $('#outputpin' + msg.pin).text(msg.state)
             });
 
@@ -36,7 +36,7 @@
                         <a href="/pinchange/{{pin}}/1">Turn on</a>
                     {% endif %}
                 {% else %}
-                    Output only
+                    Display only
                 {% endif %}
             </td>
         </tr>

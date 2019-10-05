@@ -1,4 +1,6 @@
 # pip install flask-socketio
+# http://10.0.0.132:5001/gpio/api/v1.0/pins/getstate
+
 
 from flask import Flask, render_template, flash, Response, jsonify, request
 import requests
@@ -16,8 +18,8 @@ class GPIO():
     IN = 1
     PUD_UP = 22
 
-url_server = 'http://10.0.0.132:5000/gpio/api/v1.0/'
-ip_client = '10.0.0.224'
+url_server = 'http://10.0.0.132:5001/gpio/api/v1.0/'
+ip_client = '10.0.0.157'
 
 pins = {}
 app = Flask(__name__)
@@ -35,7 +37,7 @@ def main():
     pins = response.json()
 
     templateData = {
-        'pins' : pins
+        'pins': pins
     }
     return render_template('RPiClient.html', **templateData, async_mode=socketio.async_mode)
 
@@ -63,8 +65,9 @@ def serverchange(changePin, action):
     # flash('serverchange triggered with pin={0} and state={1}'.format(changePin, action))
 
     socketio.emit('my_response', {'pin': changePin, 'state': action}, namespace=namespace)
-    return jsonify({'status' : 'OK'})
+    return jsonify({'status': 'OK'})
 
 
 if __name__ == '__main__':
+    print(ip_client)
     socketio.run(app, host=ip_client, debug=True)
