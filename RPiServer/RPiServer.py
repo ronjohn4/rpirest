@@ -2,10 +2,10 @@
 # When it's an int it gets converted to string on jsonify().
 # RPi.GPIO expects int.
 #
-# Install GPIO (pip install not available):
-# sudo apt-get -y install python3-rpi.gpio
-
-# todo - add logging
+# RPi.GPIO can't be installed on Windows.
+# pip install RPi.GPIO
+# If is in the requirements.txt
+# pip install -r requirements.txt
 #
 # Ron Johnson
 # 4/21/2018
@@ -121,10 +121,12 @@ def get_state():
 
     for pin in pins:
         pins[pin]['state'] = GPIO.input(int(pin))
+
+    app.logger.debug('getstate: {0}'.format(pins))
     return jsonify(pins)
 
 
-@app.route('/gpio/api/v1.0/pins/<changePin>/<value>', methods=['PUT'])
+@app.route('/gpio/api/v1.0/pins/<change_pin>/<value>', methods=['PUT'])
 def set_pin(change_pin, value):
     global pins
 
@@ -136,6 +138,7 @@ def set_pin(change_pin, value):
         raise InvalidUsage("pin {} isn't set for output".format(change_pin), status_code=410)
     if int(value) == GPIO.HIGH or int(value) == GPIO.LOW:
         GPIO.output(int(change_pin), int(value))
+        app.logger.debug('pin {0} changed to {1}'.format(int(change_pin), int(value)))
     else:
         app.logger.info("pin {0} can't be set to value={1}".format(change_pin, value))
         raise InvalidUsage("pin {0} can't be set to value={1}".format(change_pin, value), status_code=410)
@@ -144,27 +147,25 @@ def set_pin(change_pin, value):
     return jsonify(pins)
 
 
-@app.route('/gpio/api/v1.0/clientip/<clientIP>', methods=['POST'])
+@app.route('/gpio/api/v1.0/clientip/<client_ip>', methods=['POST'])
 def set_client(client_ip):
     global url_client
 
     url_client = 'http://' + client_ip
     app.logger.info('Client url set to: {0}'.format(url_client))
-    app.logger.info('Test using curl from the Rpi Server: curl -X PUT {0}:{1}/<pin>/1'.format(url_client, server_port))
     return jsonify(pins)
 
-print('starting')
+
 if __name__ == '__main__':
     if not os.path.exists('logs'):
         os.mkdir('logs')
     file_handler = RotatingFileHandler('logs/rpiserver.log', maxBytes=20480, backupCount=20)
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-    file_handler.setLevel(logging.DEBUG)
+    file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
     app.logger.setLevel(file_handler.level)
 
     app.logger.info('RPiServer startup =========================================')
-    print('starting main')
 
     init_pins()
     app.run(host='10.0.0.132', port=server_port, debug=True)
